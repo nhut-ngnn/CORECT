@@ -1,0 +1,7 @@
+tqdm
+torch
+numpy
+scikit_learn
+torch-geometric
+comet_ml
+sentence_transformers
