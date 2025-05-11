@@ -3,6 +3,8 @@ import os
 import argparse
 import torch
 import os
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 import numpy as np
 
@@ -18,6 +20,16 @@ def load_pkl(file):
     with open(file, "rb") as f:
         return pickle.load(f)
 
+def plot_confusion_matrix(y_true, y_pred, labels, title="Confusion Matrix"):
+    cm = metrics.confusion_matrix(y_true, y_pred, normalize='true')  # Normalize by row
+    cm_percent = cm * 100 
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm_percent, annot=True, fmt='.2f', cmap='Blues', xticklabels=labels, yticklabels=labels)
+    plt.title(title)
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    plt.tight_layout()
+    plt.show()
 
 def main(args):
     data = load_pkl(f"data/{args.dataset}/data_{args.dataset}.pkl")
@@ -60,8 +72,10 @@ def main(args):
 
         if test:
             print(metrics.classification_report(golds, preds, digits=4))
-
             print(f"F1 Score: {f1}")
+
+            plot_confusion_matrix(golds, preds, idx_labels, title=f"{args.dataset.upper()} Confusion Matrix")
+
 
 
 if __name__ == "__main__":

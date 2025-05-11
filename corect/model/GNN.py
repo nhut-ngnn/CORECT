@@ -36,7 +36,9 @@ class GNN(nn.Module):
         
 # import torch
 # import torch.nn as nn
-# from torch_geometric.nn import GATConv
+# from torch_geometric.nn import GCNConv,SAGEConv
+# import torch.nn.functional as F
+
 
 # import corect
 # class GNN(nn.Module):
@@ -45,21 +47,24 @@ class GNN(nn.Module):
 #         self.args = args
 #         self.num_modals = num_modals
 
-#         heads = 4 # = 4
+#         print("GNN --> Use Parallel GCN + GraphSAGE")
 
-#         print("GNN --> Use GAT")
+#         self.gcn = GCNConv(g_dim, h1_dim)
+#         self.sage = SAGEConv(g_dim, h1_dim)
+#         self.bn1 = nn.BatchNorm1d(h1_dim * 2)
 
-#         self.conv1 = GATConv(g_dim, h1_dim, heads=heads, concat=True)
-#         self.bn1 = nn.BatchNorm1d(h1_dim * heads)
-
-#         self.conv2 = GATConv(h1_dim * heads, h2_dim, heads=1, concat=False)
+#         self.conv2 = nn.Linear(h1_dim * 2, h2_dim)
 #         self.bn2 = nn.BatchNorm1d(h2_dim)
 
 #     def forward(self, node_features, node_type, edge_index, edge_type=None):
-#         x = self.conv1(node_features, edge_index)
-#         x = nn.functional.leaky_relu(self.bn1(x))
+#         x1 = self.gcn(node_features, edge_index)
+#         x2 = self.sage(node_features, edge_index)
 
-#         x = self.conv2(x, edge_index)
-#         x = nn.functional.leaky_relu(self.bn2(x))
+#         x = torch.cat([x1, x2], dim=-1)  # Combine features
+#         x = F.leaky_relu(self.bn1(x))
+
+#         x = self.conv2(x)
+#         x = F.leaky_relu(self.bn2(x))
 
 #         return x
+
